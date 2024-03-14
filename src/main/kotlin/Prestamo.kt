@@ -1,1 +1,1 @@
-data class Prestamo(val libro: Libro,val usuario: Usuario)
+data class Prestamo(val elemento: ElementoBiblioteca,val usuario: Usuario)

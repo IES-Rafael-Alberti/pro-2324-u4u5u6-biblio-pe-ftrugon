@@ -21,6 +21,6 @@ class Usuario(
         listaPrestamosActuales.remove(prestamo)
     }
 
-    fun consultarLibrosPrestados() = listaPrestamosActuales
+    fun consultarElementosPrestados() = listaPrestamosActuales
 
 }

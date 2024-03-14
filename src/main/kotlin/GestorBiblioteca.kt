@@ -6,8 +6,8 @@
  * @property utilidadesBiblioteca utilidades pequeñas y especificas de la biblioteca
  */
 class GestorBiblioteca(
-    val catalogo: Catalogo,
-    val registroPrestamos: RegistroPrestamos,
+    val catalogo: IGestorCatalogo,
+    val registroPrestamos: IGestorPrestamos,
     val utilidadesBiblioteca: UtilidadesBiblioteca,
     val gestorEstados: GestorEstados,
     val usuarios:List<Usuario>) {
@@ -15,20 +15,16 @@ class GestorBiblioteca(
     /**
      * Añade un libro al catalogo
      */
-    fun agregarAlCatalogo(libro: Libro){
-        libro.cambiarId(utilidadesBiblioteca.generarIdentificadorUnico())
-        catalogo.listaDeLibros.add(libro)
+    fun agregarAlCatalogo(elemento: ElementoBiblioteca){
+        elemento.cambiarId(utilidadesBiblioteca.generarIdentificadorUnico())
+        catalogo.agregarAlCatalogo(elemento)
     }
 
     /**
      * Elimina un libro del catalogo
      */
-    fun eliminarDelCatalogo(libro: Libro){
-        val libroaEliminar = catalogo.listaDeLibros.find {  it == libro  }
-        if (libroaEliminar != null){
-            catalogo.listaDeLibros.remove(libroaEliminar)
-        }
-    }
+    fun eliminarDelCatalogo(elemento: ElementoBiblioteca) = catalogo.eliminarDelCatalogo(elemento)
+
 
     /**
      * Registra un prestamo
@@ -36,10 +32,10 @@ class GestorBiblioteca(
     fun registrarPrestamo(libro: Libro,nombreUsuario: String){
 
         val usuarioaPrestarle = usuarios.find { it.nombre == nombreUsuario }
-        val libroaPrestar = catalogo.listaDeLibros.find {  it == libro  }
+        val libroaPrestar = catalogo.listaDeElementos.find {  it == libro  }
 
         if (libroaPrestar != null && usuarioaPrestarle != null && libro.consultarDisponibilidad()){
-            libroaPrestar.cambiarEstado()
+
 
             val prestamo = Prestamo(libroaPrestar,usuarioaPrestarle)
 
@@ -52,18 +48,16 @@ class GestorBiblioteca(
     /**
      * devuelve el estado de un libro a disponible
      */
-    fun devolverLibro(libro: Libro,nombreUsuario: String){
+    fun devolverLibro(elemento: ElementoBiblioteca,nombreUsuario: String){
 
         val usuarioaDevolver = usuarios.find { it.nombre == nombreUsuario }
-        val libroaDevolver = catalogo.listaDeLibros.find {  it == libro  }
+        val elementoaDevolver = catalogo.listaDeElementos.find {  it == elemento  }
 
-        if (libroaDevolver != null && usuarioaDevolver != null){
-            libroaDevolver.cambiarEstado()
+        if (elementoaDevolver != null && usuarioaDevolver != null){
 
+            val prestamo = Prestamo(elementoaDevolver,usuarioaDevolver)
 
-            val prestamo = Prestamo(libroaDevolver,usuarioaDevolver)
-
-            registroPrestamos.devolverLibro(prestamo)
+            registroPrestamos.devolverElemento(prestamo)
             usuarioaDevolver.eliminardeListaPrestamos(prestamo)
         }
 
@@ -71,13 +65,13 @@ class GestorBiblioteca(
 
 
     // HE QUITADO LA FUNCION QUE RETORNABA CADA LIBRO CON SU ESTADO Y LA HE DIVIDO EN TRES Y UNA CLASE
-    fun retornarTodos() = catalogo.listaDeLibros
+    fun retornarTodos() = catalogo.listaDeElementos
 
-    fun retornarPrestados() = gestorEstados.retornarPrestados(catalogo.listaDeLibros)
+    fun retornarPrestados() = gestorEstados.retornarPrestados(catalogo.listaDeElementos)
 
-    fun retornarDisponibles() = gestorEstados.retornarDisponibles(catalogo.listaDeLibros)
+    fun retornarDisponibles() = gestorEstados.retornarDisponibles(catalogo.listaDeElementos)
 
-    fun consultarHistorialLibro(libro: Libro) = registroPrestamos.consultarHistorialLibro(libro)
+    fun consultarHistorialLibro(libro: Libro) = registroPrestamos.consultarHistorialElemento(libro)
 
     fun consultarHistorialUsuario(nombre:String) = registroPrestamos.consultarHistorialUsuario(nombre)
 
