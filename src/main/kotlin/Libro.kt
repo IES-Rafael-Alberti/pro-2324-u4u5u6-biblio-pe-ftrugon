@@ -8,11 +8,11 @@
  * @property id La id unica de un elemento
  */
 data class Libro(
-    val titulo:String,
-    val anoPublicacion:String,
-    val tematica:String,
-    var estado: Estado = Estado.DISPONIBLE,
-    var id:String = "") {
+    private val titulo:String,
+    private val anoPublicacion:String,
+    private val tematica:String,
+    private var estado: Estado = Estado.DISPONIBLE,
+    private var id:String = "") {
 
     init {
         requireNoVacio(titulo)
@@ -27,6 +27,32 @@ data class Libro(
      */
     fun requireNoVacio(campo:String){
         require(campo.isNotEmpty()){"El campo $campo no puede estar vacio"}
+    }
+
+    fun cambiarEstado(){
+        if (this.estado == Estado.DISPONIBLE){
+            this.estado = Estado.PRESTADO
+        }else{
+            this.estado = Estado.DISPONIBLE
+        }
+    }
+
+    fun cambiarId(id: String){
+        this.id = id
+    }
+
+    fun obtenerTitulo() = this.titulo
+
+    fun obtenerAnoPublicacion() = this.anoPublicacion
+
+    fun obtenerTematica() = this.tematica
+
+    fun obtenerEstado() = this.estado
+
+    fun obtenerId() = this.id
+
+    fun consultarDisponibilidad():Boolean{
+        return if (this.estado == Estado.DISPONIBLE) true else false
     }
 }
 
